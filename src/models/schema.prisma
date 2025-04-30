@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String?
+  name       String
+  role       Role     @default(user)
+  provider   Provider @default(email)
+  providerId String?  @unique
+  bookings   Booking[]
+  reviews    Review[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Trip {
+  id         String   @id @default(uuid())
+  title      String
+  description String
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  type       TripType @default(bus)
+  startDate  DateTime
+  endDate    DateTime
+  price      Decimal
+  bookings   Booking[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id])
+  bookingDate DateTime
+  status      Status   @default(pending)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Location {
+  id          String   @id @default(uuid())
+  name        String
+  country     String
+  description String
+  trips       Trip[]
+  places      Place[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Place {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  locationId   String
+  location     Location @relation(fields: [locationId], references: [id])
+  category     Category @default(other)
+  averageRating Float?
+  imageUrl     String?
+  reviews      Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  placeId   String
+  place     Place    @relation(fields: [placeId], references: [id])
+  rating    Int
+  comment   String?
+  imageUrls Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  super_admin
+  admin
+  user
+}
+
+enum Provider {
+  email
+  google
+  facebook
+  apple
+}
+
+enum TripType {
+  bus
+  hotel
+  flight
+  train
+  cruise
+  car
+  bike
+  boat
+  other
+}
+
+enum Status {
+  pending
+  confirmed
+  cancelled
+}
+
+enum Category {
+  temple
+  beach
+  restaurant
+  market
+  other
+}
