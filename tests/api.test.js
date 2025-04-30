@@ -12,16 +12,7 @@ describe('Public API Tests', () => {
     await prisma.$transaction([
       prisma.review.deleteMany(),
       prisma.place.deleteMany(),
-      prisma.location.deleteMany(),
     ]);
-
-    // Seed locations
-    await prisma.location.createMany({
-      data: [
-        { name: 'Location 1', description: 'Description 1', country: 'Country 1', lat: 10.123, lng: 20.456 },
-        { name: 'Location 2', description: 'Description 2', country: 'Country 2', lat: 15.789, lng: 25.987 },
-      ],
-    });
 
     // Seed places
     await prisma.place.createMany({
@@ -45,22 +36,11 @@ describe('Public API Tests', () => {
   });
 
   /**
-   * Test: Fetch all locations
-   * Endpoint: GET /locations
-   */
-  it('GET /locations should return all locations', async () => {
-    const res = await request(app).get('/api/locations');
-    expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    expect(res.body.length).toBeGreaterThan(0);
-  });
-
-  /**
    * Test: Fetch all places
    * Endpoint: GET /places
    */
   it('GET /places should return all approved places', async () => {
-    const res = await request(app).get('/api/places');
+    const res = await request(app).get('/places');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
@@ -71,7 +51,7 @@ describe('Public API Tests', () => {
    * Endpoint: GET /trips
    */
   it('GET /trips should return all trips', async () => {
-    const res = await request(app).get('/api/trips');
+    const res = await request(app).get('/trips');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
@@ -82,7 +62,7 @@ describe('Public API Tests', () => {
    * Endpoint: GET /reviews
    */
   it('GET /reviews should return all reviews', async () => {
-    const res = await request(app).get('/api/reviews');
+    const res = await request(app).get('/reviews');
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body.length).toBeGreaterThan(0);
