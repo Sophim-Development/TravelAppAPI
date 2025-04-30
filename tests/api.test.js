@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { PrismaClient } from '@prisma/client';
-import app from '../src/index.js'; 
+import app from '../src/index.js';
 
 const prisma = new PrismaClient();
 
@@ -12,15 +12,14 @@ describe('Public API Tests', () => {
     await prisma.$transaction([
       prisma.review.deleteMany(),
       prisma.place.deleteMany(),
-      prisma.trip.deleteMany(),
       prisma.location.deleteMany(),
     ]);
 
     // Seed locations
     await prisma.location.createMany({
       data: [
-        { name: 'Location 1', description: 'Description 1', country: 'Country 1' },
-        { name: 'Location 2', description: 'Description 2', country: 'Country 2' },
+        { name: 'Location 1', description: 'Description 1', country: 'Country 1', lat: 10.123, lng: 20.456 },
+        { name: 'Location 2', description: 'Description 2', country: 'Country 2', lat: 15.789, lng: 25.987 },
       ],
     });
 
@@ -29,14 +28,6 @@ describe('Public API Tests', () => {
       data: [
         { name: 'Place 1', description: 'Description 1', location: 'City 1', type: 'city', isApproved: true },
         { name: 'Place 2', description: 'Description 2', location: 'City 2', type: 'beach', isApproved: true },
-      ],
-    });
-
-    // Seed trips
-    await prisma.trip.createMany({
-      data: [
-        { title: 'Trip 1', description: 'Description 1', price: 100, startDate: new Date(), endDate: new Date() },
-        { title: 'Trip 2', description: 'Description 2', price: 200, startDate: new Date(), endDate: new Date() },
       ],
     });
 
