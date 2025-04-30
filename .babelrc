@@ -1,0 +1,4 @@
+// filepath: /Users/realwat/Documents/Projects/TravelAppAPI/babel.config.json
+{
+  "presets": ["@babel/preset-env"]
+}

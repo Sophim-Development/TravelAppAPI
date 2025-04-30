@@ -1,0 +1,99 @@
+import request from 'supertest';
+import { PrismaClient } from '@prisma/client';
+import app from '../src/index.js'; 
+
+const prisma = new PrismaClient();
+
+describe('Public API Tests', () => {
+  beforeAll(async () => {
+    await prisma.$connect();
+
+    // Clear and seed the database
+    await prisma.$transaction([
+      prisma.review.deleteMany(),
+      prisma.place.deleteMany(),
+      prisma.trip.deleteMany(),
+      prisma.location.deleteMany(),
+    ]);
+
+    // Seed locations
+    await prisma.location.createMany({
+      data: [
+        { name: 'Location 1', description: 'Description 1', country: 'Country 1' },
+        { name: 'Location 2', description: 'Description 2', country: 'Country 2' },
+      ],
+    });
+
+    // Seed places
+    await prisma.place.createMany({
+      data: [
+        { name: 'Place 1', description: 'Description 1', location: 'City 1', type: 'city', isApproved: true },
+        { name: 'Place 2', description: 'Description 2', location: 'City 2', type: 'beach', isApproved: true },
+      ],
+    });
+
+    // Seed trips
+    await prisma.trip.createMany({
+      data: [
+        { title: 'Trip 1', description: 'Description 1', price: 100, startDate: new Date(), endDate: new Date() },
+        { title: 'Trip 2', description: 'Description 2', price: 200, startDate: new Date(), endDate: new Date() },
+      ],
+    });
+
+    // Seed reviews
+    await prisma.review.createMany({
+      data: [
+        { rating: 5, comment: 'Great place!', placeId: 1 },
+        { rating: 4, comment: 'Nice experience!', placeId: 2 },
+      ],
+    });
+  });
+
+  afterAll(async () => {
+    await prisma.$disconnect();
+  });
+
+  /**
+   * Test: Fetch all locations
+   * Endpoint: GET /locations
+   */
+  it('GET /locations should return all locations', async () => {
+    const res = await request(app).get('/api/locations');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * Test: Fetch all places
+   * Endpoint: GET /places
+   */
+  it('GET /places should return all approved places', async () => {
+    const res = await request(app).get('/api/places');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * Test: Fetch all trips
+   * Endpoint: GET /trips
+   */
+  it('GET /trips should return all trips', async () => {
+    const res = await request(app).get('/api/trips');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+
+  /**
+   * Test: Fetch all reviews
+   * Endpoint: GET /reviews
+   */
+  it('GET /reviews should return all reviews', async () => {
+    const res = await request(app).get('/api/reviews');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+  });
+});
