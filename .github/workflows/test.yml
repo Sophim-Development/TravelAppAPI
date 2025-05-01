@@ -27,7 +27,8 @@ jobs:
       - name: Set DATABASE_URL
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-
+      - name: Run Project
+        run: npm start
       - name: Run Tests
         run: npm test
       - run: npm test:coverage
