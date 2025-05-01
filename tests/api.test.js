@@ -11,6 +11,18 @@ jest.mock('../src/utils/cloudinary', () => ({
   uploadImage: jest.fn().mockResolvedValue('https://res.cloudinary.com/demo/image/upload/sample.jpg'),
 }));
 
+jest.mock('passport-google-oauth20', () => ({
+  Strategy: jest.fn(),
+}));
+
+jest.mock('passport-facebook', () => ({
+  Strategy: jest.fn(),
+}));
+
+jest.mock('passport-apple', () => ({
+  Strategy: jest.fn(),
+}));
+
 const generateToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET);
 
 describe('API Tests', () => {
