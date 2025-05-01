@@ -1,6 +1,6 @@
 // tests/api.test.js
 import request from 'supertest';
-import app from '../src/index.js';
+import { app, server, start } from '../src/index.js';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -18,6 +18,7 @@ describe('API Tests', () => {
 
   beforeAll(async () => {
     await prisma.$connect();
+    start(); // Start the server before tests
 
     await prisma.$transaction([
       prisma.review.deleteMany(),
@@ -94,6 +95,7 @@ describe('API Tests', () => {
 
   afterAll(async () => {
     await prisma.$disconnect();
+    await new Promise((resolve) => server.close(resolve)); // Close the server after tests
   });
 
   it('POST /api/auth/login should login a user', async () => {

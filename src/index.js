@@ -17,8 +17,8 @@ app.use(passport.initialize());
 
 // Rate limiting
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests
+  windowMs: 15 * 60 * 1000,
+  max: 100,
 });
 app.use(limiter);
 
@@ -32,9 +32,18 @@ app.use('/api/v2', apiV2Routes);
 // Error handling
 app.use(errorHandler);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
+let server;
 
-export default app;
+const start = () => {
+  const PORT = process.env.PORT || 3000;
+  server = app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+  });
+  return server;
+};
+
+if (process.env.NODE_ENV !== 'test') {
+  start();
+}
+
+export { app, server, start };
