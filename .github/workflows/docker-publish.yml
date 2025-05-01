@@ -21,6 +21,11 @@ env:
   # github.repository as <account>/<repo>
   IMAGE_NAME: ${{ github.repository }}
   PORT: 5003
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  JWT_SECRET: ${{ secrets.JWT_SECRET }}
+  CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+  CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+  CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
 
 jobs:
   build:
@@ -82,6 +87,12 @@ jobs:
       - name: Build and push Docker image
         id: build-and-push
         uses: docker/build-push-action@0565240e2d4ab88bba5387d719585280857ece09 # v5.0.0
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
@@ -92,6 +103,11 @@ jobs:
           build-args: |
             PORT=${{ env.PORT }}
             NODE_ENV=production
+            DATABASE_URL=${{ env.DATABASE_URL }}
+            JWT_SECRET=${{ env.JWT_SECRET }}
+            CLOUDINARY_CLOUD_NAME=${{ env.CLOUDINARY_CLOUD_NAME }}
+            CLOUDINARY_API_KEY=${{ env.CLOUDINARY_API_KEY }}
+            CLOUDINARY_API_SECRET=${{ env.CLOUDINARY_API_SECRET }}
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker
