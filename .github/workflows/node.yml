@@ -46,7 +46,7 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - name: Reset Database
-      run: npx prisma migrate reset
+      run: npx prisma migrate reset --force
     - name: Generate Prisma Client
       run: npx prisma generate
     - name: Apply database migrations
