@@ -37,7 +37,7 @@ RUN npx prisma generate
 RUN npx prisma migrate deploy
 
 # Copy the .env file to the container
-COPY .env ./
+# COPY .env ./
 
 # Copy the rest of your application code to the container
 COPY . .
