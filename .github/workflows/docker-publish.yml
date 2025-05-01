@@ -92,21 +92,6 @@ jobs:
           build-args: |
             PORT=${{ env.PORT }}
             NODE_ENV=production
-          secrets: |
-            "DATABASE_URL=${{ secrets.DATABASE_URL }}"
-            "JWT_SECRET=${{ secrets.JWT_SECRET }}"
-            "CLOUDINARY_CLOUD_NAME=${{ secrets.CLOUDINARY_CLOUD_NAME }}"
-            "CLOUDINARY_API_KEY=${{ secrets.CLOUDINARY_API_KEY }}"
-            "CLOUDINARY_API_SECRET=${{ secrets.CLOUDINARY_API_SECRET }}"
-            "CLOUDINARY_UPLOAD_PRESET=${{ secrets.CLOUDINARY_UPLOAD_PRESET }}"
-            "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}"
-            "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}"
-            "FACEBOOK_CLIENT_ID=${{ secrets.FACEBOOK_CLIENT_ID }}"
-            "FACEBOOK_CLIENT_SECRET=${{ secrets.FACEBOOK_CLIENT_SECRET }}"
-            "APPLE_CLIENT_ID=${{ secrets.APPLE_CLIENT_ID }}"
-            "APPLE_KEY_ID=${{ secrets.APPLE_KEY_ID }}"
-            "APPLE_TEAM_ID=${{ secrets.APPLE_TEAM_ID }}"
-            "APPLE_PRIVATE_KEY=${{ secrets.APPLE_PRIVATE_KEY }}"
 
       # Sign the resulting Docker image digest except on PRs.
       # This will only write to the public Rekor transparency log when the Docker

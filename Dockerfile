@@ -27,8 +27,17 @@ RUN npm install -g prisma
 # Copy the Prisma schema file to the container
 COPY prisma ./prisma
 
+# Reset the database
+RUN npx prisma migrate reset --force --skip-seed
+
 # Generate the Prisma client
 RUN npx prisma generate
+
+# Migrate the database
+RUN npx prisma migrate deploy
+
+# Copy the .env file to the container
+COPY .env ./
 
 # Copy the rest of your application code to the container
 COPY . .
