@@ -15,7 +15,12 @@ jobs:
 
     strategy:
       matrix:
+<<<<<<< HEAD:.github/workflows/test.yml
         node-version: [18.x]
+=======
+        node-version: [18.x, 20.x, 22.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+>>>>>>> 492de69ee4e1559847392dc6aa05a8678d3b066f:.github/workflows/test-api.yml
 
     steps:
     - uses: actions/checkout@v4
@@ -24,6 +29,7 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
+<<<<<<< HEAD:.github/workflows/test.yml
         cache: npm
 
     - name: Install dependencies
@@ -41,3 +47,10 @@ jobs:
         name: coverage-report
         path: coverage/
         retention-days: 30
+=======
+        cache: 'npm'
+    
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
+>>>>>>> 492de69ee4e1559847392dc6aa05a8678d3b066f:.github/workflows/test-api.yml

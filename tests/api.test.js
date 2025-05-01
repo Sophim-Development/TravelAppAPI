@@ -11,6 +11,18 @@ jest.mock('../src/utils/cloudinary', () => ({
   uploadImage: jest.fn().mockResolvedValue('https://res.cloudinary.com/demo/image/upload/sample.jpg'),
 }));
 
+jest.mock('dotenv/config', () => {
+  process.env.GOOGLE_CLIENT_ID = 'test-google-client-id';
+  process.env.GOOGLE_CLIENT_SECRET = 'test-google-client-secret';
+  process.env.FACEBOOK_CLIENT_ID = 'test-facebook-client-id';
+  process.env.FACEBOOK_CLIENT_SECRET = 'test-facebook-client-secret';
+  process.env.APPLE_CLIENT_ID = 'test-apple-client-id';
+  process.env.APPLE_TEAM_ID = 'test-apple-team-id';
+  process.env.APPLE_KEY_ID = 'test-apple-key-id';
+  process.env.APPLE_PRIVATE_KEY = 'test-apple-private-key';
+  process.env.JWT_SECRET = 'test-jwt-secret';
+});
+
 const generateToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET);
 
 describe('API Tests', () => {
