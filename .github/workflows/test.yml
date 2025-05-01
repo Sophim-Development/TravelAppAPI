@@ -10,33 +10,24 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [18.x]
-
     steps:
-    - uses: actions/checkout@v4
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - run: npm ci
-    - run: npm run build --if-present
-    - name: Set environment variables
-      run: |
-        echo "GOOGLE_CLIENT_ID=your-google-client-id" >> $GITHUB_ENV
-        echo "GOOGLE_CLIENT_SECRET=your-google-client-secret" >> $GITHUB_ENV
-        echo "FACEBOOK_CLIENT_ID=your-facebook-client-id" >> $GITHUB_ENV
-        echo "FACEBOOK_CLIENT_SECRET=your-facebook-client-secret" >> $GITHUB_ENV
-        echo "APPLE_CLIENT_ID=your-apple-client-id" >> $GITHUB_ENV
-        echo "APPLE_TEAM_ID=your-apple-team-id" >> $GITHUB_ENV
-        echo "APPLE_KEY_ID=your-apple-key-id" >> $GITHUB_ENV
-        echo "APPLE_PRIVATE_KEY=your-apple-private-key" >> $GITHUB_ENV
-        echo "JWT_SECRET=your-jwt-secret" >> $GITHUB_ENV
-    - run: npm test
-    - run: npm test:coverage
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Set DATABASE_URL
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      - name: Run Tests
+        run: npm test
+      - run: npm test:coverage
