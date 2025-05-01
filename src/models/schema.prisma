@@ -53,6 +53,8 @@ model Location {
   name        String
   country     String
   description String
+  lat         Float
+  long        Float
   trips       Trip[]
   places      Place[]
   createdAt   DateTime @default(now())

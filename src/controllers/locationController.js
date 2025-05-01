@@ -10,7 +10,7 @@ export const getLocations = async (req, res, next) => {
         places: true,
       },
     });
-    res.json(locations);
+    res.status(200).json({data: locations});
   } catch (error) {
     next(error);
   }
@@ -38,7 +38,7 @@ export const getLocation = async (req, res, next) => {
       return res.status(404).json({ error: 'Location not found' });
     }
 
-    res.status(200).json(location);
+    res.status(200).json({data: location});
   } catch (error) {
     console.error('Error fetching location:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -47,12 +47,26 @@ export const getLocation = async (req, res, next) => {
 
 export const createLocation = async (req, res, next) => {
   try {
+    // Check if the user has the 'admin' role
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Unauthorized' });
+    }
+
     const { name, country, description, lat, long } = req.body;
+
     const location = await prisma.location.create({
-      data: { name, country, description, lat: parseFloat(lat), long: parseFloat(long) },
+      data: {
+        name,
+        country,
+        description,
+        lat: parseFloat(lat),
+        long: parseFloat(long),
+      },
     });
-    res.status(201).json(location);
+
+    res.status(201).json({ location });
   } catch (error) {
+    console.error('Error creating location:', error);
     next(error);
   }
 };

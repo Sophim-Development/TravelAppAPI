@@ -31,7 +31,16 @@ export const register = async (req, res, next) => {
     });
 
     const token = generateToken(user);
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        provider: user.provider,
+      },
+    });
   } catch (error) {
     next(error);
   }
@@ -56,7 +65,16 @@ export const login = async (req, res, next) => {
     }
 
     const token = generateToken(user);
-    res.json({ token });
+    res.json({
+      token,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+        provider: user.provider,
+      },
+    });
   } catch (error) {
     next(error);
   }

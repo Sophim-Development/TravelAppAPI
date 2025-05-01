@@ -10,7 +10,7 @@ export const getTrips = async (req, res, next) => {
         bookings: true,
       },
     });
-    res.json(trips);
+    res.json({ data: trips});
   } catch (error) {
     next(error);
   }
@@ -26,7 +26,7 @@ export const getTrip = async (req, res, next) => {
     if (!trip) {
       return res.status(404).json({ error: 'Trip not found' });
     }
-    res.json(trip);
+    res.json({trip});
   } catch (error) {
     next(error);
   }

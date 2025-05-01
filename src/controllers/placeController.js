@@ -15,7 +15,7 @@ export const getPlaces = async (req, res, next) => {
       },
       include: { location: true },
     });
-    res.json(places);
+    res.json({data: places});
   } catch (error) {
     next(error);
   }
@@ -102,21 +102,35 @@ export const createPlace = async (req, res, next) => {
 
     const { name, description, locationId, category } = req.body;
     let imageUrl = null;
+
+    // Check if a file is uploaded
     if (req.file) {
       imageUrl = await uploadImage(req.file);
+    } else if (req.body.imageUrl) {
+      // Use the provided imageUrl from the request body
+      imageUrl = req.body.imageUrl;
+    }
+
+    // Validate that imageUrl is not null
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'No image provided' });
     }
 
     const place = await prisma.place.create({
       data: {
         name,
         description,
-        locationId,
         category,
         imageUrl,
+        location: {
+          connect: { id: locationId },
+        },
       },
     });
-    res.status(201).json(place);
+
+    res.status(201).json({ place });
   } catch (error) {
+    console.error('Error creating place:', error);
     next(error);
   }
 };
@@ -137,6 +151,11 @@ export const updatePlace = async (req, res, next) => {
     let imageUrl = null;
     if (req.file) {
       imageUrl = await uploadImage(req.file);
+    } else {
+      imageUrl = req.body.imageUrl;
+    }
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'No image provided' });
     }
 
     const place = await prisma.place.update({
