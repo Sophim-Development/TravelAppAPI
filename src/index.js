@@ -3,17 +3,17 @@ import apiRoutes from './routes/api.js';
 import apiV2Routes from './routes/apiV2.js';
 import { errorHandler } from './middleware/error.js';
 import swaggerSpec  from './config/swagger.js';
-import passport from 'passport';
+// import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import './utils/passport.js';
-import { logger } from './utils/logger.js';
+// import { logger } from './utils/logger.js';
 import rateLimit from 'express-rate-limit';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
-app.use(passport.initialize());
+// app.use(passport.initialize());
 
 // Rate limiting
 const limiter = rateLimit({
