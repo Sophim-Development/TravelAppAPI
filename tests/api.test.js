@@ -4,11 +4,6 @@ import { app, start, stop } from '../src/index.js';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
-import { execSync } from 'child_process';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prisma = new PrismaClient();
 
@@ -28,17 +23,12 @@ jest.mock('dotenv/config', () => {
   process.env.JWT_SECRET = 'test-jwt-secret';
 });
 
-const generateToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'test-secret');
+const generateToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET);
 
 describe('API Tests', () => {
   let superAdminToken, adminToken, userToken, testLocation, testPlace, testTrip;
 
   beforeAll(async () => {
-    // Generate the Prisma Client for SQLite
-    process.env.DATABASE_URL = 'file:./prisma/test.db';
-    execSync('npx prisma generate --schema=./prisma/schema.test.prisma');
-    execSync('npx prisma migrate reset --force --schema=./prisma/schema.test.prisma');
-    
     await prisma.$connect();
     start();
 
@@ -117,7 +107,7 @@ describe('API Tests', () => {
 
   afterAll(async () => {
     await prisma.$disconnect();
-    await stop();
+    await stop(); // Use the new stop function
   });
 
   it('POST /api/auth/login should login a user', async () => {
