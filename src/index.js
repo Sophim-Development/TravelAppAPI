@@ -6,7 +6,7 @@ import swaggerSpec  from './config/swagger.js';
 // import passport from 'passport';
 import swaggerUi from 'swagger-ui-express';
 import './utils/passport.js';
-import { logger } from './utils/logger.js';
+// import { logger } from './utils/logger.js';
 import rateLimit from 'express-rate-limit';
 
 const app = express();
