@@ -12,15 +12,21 @@ jest.mock('../src/utils/cloudinary', () => ({
 }));
 
 jest.mock('passport-google-oauth20', () => ({
-  Strategy: jest.fn(),
+  Strategy: jest.fn().mockImplementation((options, verify) => {
+    verify(null, { id: 'google-id', emails: [{ value: 'test@example.com' }], displayName: 'Test User' });
+  }),
 }));
 
 jest.mock('passport-facebook', () => ({
-  Strategy: jest.fn(),
+  Strategy: jest.fn().mockImplementation((options, verify) => {
+    verify(null, { id: 'facebook-id', emails: [{ value: 'test@example.com' }], displayName: 'Test User' });
+  }),
 }));
 
 jest.mock('passport-apple', () => ({
-  Strategy: jest.fn(),
+  Strategy: jest.fn().mockImplementation((options, verify) => {
+    verify(null, { id: 'apple-id', email: 'test@example.com', name: 'Test User' });
+  }),
 }));
 
 const generateToken = (user) => jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET);
