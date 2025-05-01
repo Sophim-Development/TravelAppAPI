@@ -1,0 +1,116 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./test.db"
+}
+
+model User {
+  email    String    @unique
+  password String
+  name     String
+  id       Int       @id @default(autoincrement())
+  role     Role      @default(user)
+  bookings Booking[]
+  reviews  Review[]
+  provider  Provider @default(email)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Trip {
+  title       String
+  description String
+  startDate   DateTime
+  endDate     DateTime
+  locationId  Int
+  price       Float
+  id          Int       @id @default(autoincrement())
+  type        TripType
+  bookings    Booking[]
+  location    Location  @relation(fields: [locationId], references: [id])
+}
+
+model Location {
+  id          Int     @id @default(autoincrement())
+  name        String
+  country     String
+  description String
+  lat         Float
+  long        Float
+  places      Place[]
+  trips       Trip[]
+}
+
+model Booking {
+  bookingDate DateTime
+  userId      Int
+  id          Int           @id @default(autoincrement())
+  tripId      Int
+  status      BookingStatus @default(pending)
+  trip        Trip          @relation(fields: [tripId], references: [id])
+  user        User          @relation(fields: [userId], references: [id])
+}
+
+model Place {
+  id          Int           @id @default(autoincrement())
+  name        String
+  description String
+  locationId  Int
+  imageUrl    String
+  category    PlaceCategory
+  location    Location      @relation(fields: [locationId], references: [id])
+  reviews     Review[]
+}
+
+model Review {
+  rating  Int
+  comment String?
+  placeId Int
+  id      Int     @id @default(autoincrement())
+  userId  Int
+  place   Place   @relation(fields: [placeId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  super_admin
+  admin
+  user
+}
+
+enum TripType {
+  bus
+  hotel
+  train
+  flight
+  car
+  boat
+  bike
+  motobike
+  other
+}
+
+enum BookingStatus {
+  pending
+  confirmed
+  cancelled
+}
+
+enum PlaceCategory {
+  temple
+  beach
+  restaurant
+  market
+  other
+}
+
+enum Provider {
+  google
+  facebook
+  apple
+  email
+  other
+} 

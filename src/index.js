@@ -32,27 +32,9 @@ app.use('/api/v2', apiV2Routes);
 // Error handling
 app.use(errorHandler);
 
-let server = null;
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  logger.info(`Server running on port ${PORT}`);
+});
 
-const start = () => {
-  if (!server) {
-    const PORT = process.env.PORT || 3000;
-    server = app.listen(PORT, () => {
-      logger.info(`Server running on port ${PORT}`);
-    });
-  }
-  return server;
-};
-
-const stop = async () => {
-  if (server) {
-    await new Promise((resolve) => server.close(resolve));
-    server = null;
-  }
-};
-
-if (process.env.NODE_ENV !== 'test') {
-  start();
-}
-
-export { app, server, start, stop };
+export default app;
