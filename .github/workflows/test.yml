@@ -11,13 +11,11 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
         node-version: [18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
     - uses: actions/checkout@v4
@@ -26,7 +24,19 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+
     - run: npm ci
     - run: npm run build --if-present
+    - name: Set environment variables
+      run: |
+        echo "GOOGLE_CLIENT_ID=your-google-client-id" >> $GITHUB_ENV
+        echo "GOOGLE_CLIENT_SECRET=your-google-client-secret" >> $GITHUB_ENV
+        echo "FACEBOOK_CLIENT_ID=your-facebook-client-id" >> $GITHUB_ENV
+        echo "FACEBOOK_CLIENT_SECRET=your-facebook-client-secret" >> $GITHUB_ENV
+        echo "APPLE_CLIENT_ID=your-apple-client-id" >> $GITHUB_ENV
+        echo "APPLE_TEAM_ID=your-apple-team-id" >> $GITHUB_ENV
+        echo "APPLE_KEY_ID=your-apple-key-id" >> $GITHUB_ENV
+        echo "APPLE_PRIVATE_KEY=your-apple-private-key" >> $GITHUB_ENV
+        echo "JWT_SECRET=your-jwt-secret" >> $GITHUB_ENV
     - run: npm test
     - run: npm test:coverage
