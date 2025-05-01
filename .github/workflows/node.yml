@@ -11,11 +11,27 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     env:
-        DATABASE_URL: ${{ secrets.DATABASE_URL }}
-        NODE_ENV: test
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      NODE_ENV: test
+
     strategy:
       matrix:
         node-version: [18.x, 20.x, 22.x]
@@ -29,5 +45,18 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run build --if-present
-    - run: npm test
+    - name: Generate Prisma Client
+      run: npx prisma generate
+    - name: Apply database migrations
+      run: npx prisma migrate deploy
+    - name: Build
+      run: npm run build --if-present
+    - name: Run tests with coverage
+      run: npm test -- --coverage
+    - name: Upload coverage report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-report-${{ matrix.node-version }}
+        path: coverage/lcov-report/
+        retention-days: 30
