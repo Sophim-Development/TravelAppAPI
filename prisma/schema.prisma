@@ -8,71 +8,84 @@ datasource db {
 }
 
 model User {
-  email    String    @unique
-  password String
-  name     String
-  id       Int       @id @default(autoincrement())
-  role     Role      @default(user)
-  bookings Booking[]
-  reviews  Review[]
-  provider  Provider @default(email)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(uuid())
+  email      String   @unique
+  password   String?
+  name       String
+  role       Role     @default(user)
+  provider   Provider @default(email)
+  providerId String?  @unique
+  bookings   Booking[]
+  reviews    Review[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model Trip {
-  title       String
+  id         String   @id @default(uuid())
+  title      String
   description String
-  startDate   DateTime
-  endDate     DateTime
-  locationId  Int
-  price       Float
-  id          Int       @id @default(autoincrement())
-  type        TripType
-  bookings    Booking[]
-  location    Location  @relation(fields: [locationId], references: [id])
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+  type       TripType @default(bus)
+  startDate  DateTime
+  endDate    DateTime
+  price      Decimal
+  bookings   Booking[]
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model Booking {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  tripId      String
+  trip        Trip     @relation(fields: [tripId], references: [id])
+  bookingDate DateTime
+  status      Status   @default(pending)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Location {
-  id          Int     @id @default(autoincrement())
+  id          String   @id @default(uuid())
   name        String
   country     String
   description String
   lat         Float
   long        Float
-  places      Place[]
   trips       Trip[]
-}
-
-model Booking {
-  bookingDate DateTime
-  userId      Int
-  id          Int           @id @default(autoincrement())
-  tripId      Int
-  status      BookingStatus @default(pending)
-  trip        Trip          @relation(fields: [tripId], references: [id])
-  user        User          @relation(fields: [userId], references: [id])
+  places      Place[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model Place {
-  id          Int           @id @default(autoincrement())
-  name        String
-  description String
-  locationId  Int
-  imageUrl    String
-  category    PlaceCategory
-  location    Location      @relation(fields: [locationId], references: [id])
-  reviews     Review[]
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  locationId   String
+  location     Location @relation(fields: [locationId], references: [id])
+  category     Category @default(other)
+  averageRating Float?
+  imageUrl     String?
+  reviews      Review[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Review {
-  rating  Int
-  comment String?
-  placeId Int
-  id      Int     @id @default(autoincrement())
-  userId  Int
-  place   Place   @relation(fields: [placeId], references: [id])
-  user    User    @relation(fields: [userId], references: [id])
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  placeId   String
+  place     Place    @relation(fields: [placeId], references: [id])
+  rating    Int
+  comment   String?
+  imageUrls Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 enum Role {
@@ -81,36 +94,35 @@ enum Role {
   user
 }
 
+enum Provider {
+  email
+  google
+  facebook
+  apple
+}
+
 enum TripType {
   bus
   hotel
-  train
   flight
+  train
+  cruise
   car
-  boat
   bike
-  motobike
+  boat
   other
 }
 
-enum BookingStatus {
+enum Status {
   pending
   confirmed
   cancelled
 }
 
-enum PlaceCategory {
+enum Category {
   temple
   beach
   restaurant
   market
-  other
-}
-
-enum Provider {
-  google
-  facebook
-  apple
-  email
   other
 }

@@ -1,44 +1,45 @@
 services:
-  app:
-    build: .
-    container_name: der-leng-app
-    environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/derlengapp
-      - JWT_SECRET=01ffa0ec6e96f132667d0b183d4774993aeecffc5c7e8027307c8b8ad362f2d3
-      - NODE_ENV=development
+ app:
+   build: .
+   container_name: der-leng-app
+   environment:
+     - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/travel_app
+     - NODE_ENV=development
+      - JWT_SECRET="01ffa0ec6e96f132667d0b183d4774993aeecffc5c7e8027307c8b8ad362f2d3"
       - PORT=5003
-      - CLOUDINARY_CLOUD_NAME=dqn4y0uvf
-      - CLOUDINARY_API_KEY=953283145193861
-      - CLOUDINARY_API_SECRET=UYg1j3YFaVlFZI3cH7A9Z6qnGN0
-    ports:
-      - "5003:5003"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      db:
-        condition: service_healthy
-    command: ["npm", "start"]
+      - CLOUDINARY_CLOUD_NAME="dqn4y0uvf"
+      - CLOUDINARY_API_KEY="953283145193861"
+      - CLOUDINARY_API_SECRET="UYg1j3YFaVlFZI3cH7A9Z6qnGN0"
+   ports:
+     - "500:5000"
+   volumes:
+     - .:/app
+   depends_on:
+     db:
+       condition: service_healthy
+   command: ["npm", "start"]
 
-  db:
-    image: postgres:13-alpine
-    container_name: der-leng-db
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: derlengapp
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+
+ db:
+   image: travel_app
+   container_name: travel_app_db
+   environment:
+     POSTGRES_USER: postgres
+     POSTGRES_PASSWORD: drs2GBr81Wo1getk
+     POSTGRES_DB: postgres
+   ports:
+     - "8000:8000"
+   volumes:
+     - postgres-data:/var/lib/database/data
+   healthcheck:
+     test: ["CMD-SHELL", "pg_isready -U postgres"]
+     interval: 5s
+     timeout: 5s
+     retries: 5
+
 
 volumes:
-  postgres-data:
+ postgres-data:
 networks:
-  app-network:
-    driver: bridge
+ app-network:
+   driver: bridge
