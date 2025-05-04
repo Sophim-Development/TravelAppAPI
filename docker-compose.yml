@@ -3,15 +3,15 @@ services:
    build: .
    container_name: der-leng-app
    environment:
-     - DATABASE_URL=postgresql://postgres:postgres@localhost:5432/travel_app
-     - NODE_ENV=development
+      - DATABASE_URL="postgresql://realwat:postgres@db:5432/travel_app?schema=public"
+      - NODE_ENV=development
       - JWT_SECRET="01ffa0ec6e96f132667d0b183d4774993aeecffc5c7e8027307c8b8ad362f2d3"
       - PORT=5003
       - CLOUDINARY_CLOUD_NAME="dqn4y0uvf"
       - CLOUDINARY_API_KEY="953283145193861"
       - CLOUDINARY_API_SECRET="UYg1j3YFaVlFZI3cH7A9Z6qnGN0"
    ports:
-     - "500:5000"
+     - "5003:5003"
    volumes:
      - .:/app
    depends_on:
@@ -21,16 +21,16 @@ services:
 
 
  db:
-   image: travel_app
-   container_name: travel_app_db
+   image: postgres:15
+   container_name: travelapp-db
    environment:
      POSTGRES_USER: postgres
-     POSTGRES_PASSWORD: drs2GBr81Wo1getk
+     POSTGRES_PASSWORD: mydatabase
      POSTGRES_DB: postgres
    ports:
-     - "8000:8000"
+     - "5432:5432"
    volumes:
-     - postgres-data:/var/lib/database/data
+     - postgres-data:/var/lib/postgresql/data
    healthcheck:
      test: ["CMD-SHELL", "pg_isready -U postgres"]
      interval: 5s
