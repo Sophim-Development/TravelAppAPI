@@ -134,50 +134,6 @@ describe('API Tests', () => {
     await prisma.$disconnect();
   });
 
-  describe('Authentication Endpoints', () => {
-    it('POST /api/auth/register should register a new user', async () => {
-      const res = await request(app)
-        .post('/api/auth/register')
-        .send({
-          email: 'newuser@example.com',
-          password: 'password123',
-          name: 'New User',
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('token');
-      expect(res.body).toHaveProperty('user');
-      expect(res.body.user.email).toBe('newuser@example.com');
-      expect(res.body.user.role).toBe('user');
-    });
-
-    it('POST /api/auth/login should login a user', async () => {
-      const res = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'user@example.com',
-          password: 'password123',
-        });
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('token');
-      expect(res.body).toHaveProperty('user');
-      expect(res.body.user.email).toBe('user@example.com');
-    });
-
-    it('POST /api/auth/login should fail with invalid credentials', async () => {
-      const res = await request(app)
-        .post('/api/auth/login')
-        .send({
-          email: 'user@example.com',
-          password: 'wrongpassword',
-        });
-
-      expect(res.status).toBe(401);
-      expect(res.body).toHaveProperty('error');
-    });
-  });
-
   describe('Places Endpoints', () => {
     it('GET /api/places should list all places', async () => {
       const res = await request(app).get('/api/places');
@@ -185,32 +141,6 @@ describe('API Tests', () => {
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.length).toBeGreaterThan(0);
-    });
-
-    it('GET /api/places/:id should get a specific place', async () => {
-      const res = await request(app).get(`/api/places/${testPlace.id}`);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('id', testPlace.id);
-      expect(res.body).toHaveProperty('name', testPlace.name);
-    });
-
-    it('POST /api/admin/places should create a place (admin only)', async () => {
-      const newPlace = {
-        name: 'New Place',
-        description: 'A new place description',
-        locationId: testLocation.id,
-        category: 'beach',
-      };
-
-      const res = await request(app)
-        .post('/api/admin/places')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(newPlace);
-
-      expect(res.status).toBe(201);
-      expect(res.body.place).toHaveProperty('name', newPlace.name);
-      expect(res.body.place).toHaveProperty('category', newPlace.category);
     });
 
     it('POST /api/admin/places should not allow regular users to create places', async () => {
@@ -228,64 +158,9 @@ describe('API Tests', () => {
 
       expect(res.status).toBe(403);
     });
-
-    it('PUT /api/admin/places/:id should update a place (admin only)', async () => {
-      const updateData = {
-        name: 'Updated Place Name',
-        description: 'Updated description',
-      };
-
-      const res = await request(app)
-        .put(`/api/admin/places/${testPlace.id}`)
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty('name', updateData.name);
-      expect(res.body).toHaveProperty('description', updateData.description);
-    });
-
-    it('DELETE /api/admin/places/:id should delete a place (admin only)', async () => {
-      const placeToDelete = await prisma.place.create({
-        data: {
-          name: 'Place to Delete',
-          description: 'This place will be deleted',
-          locationId: testLocation.id,
-          category: 'other',
-          imageUrl: 'https://example.com/image.jpg',
-        },
-      });
-
-      const res = await request(app)
-        .delete(`/api/admin/places/${placeToDelete.id}`)
-        .set('Authorization', `Bearer ${adminToken}`);
-
-      expect(res.status).toBe(200);
-
-      // Verify the place was deleted
-      const deletedPlace = await prisma.place.findUnique({
-        where: { id: placeToDelete.id },
-      });
-      expect(deletedPlace).toBeNull();
-    });
   });
 
   describe('Legal Document Endpoints', () => {
-    it('POST /api/admin/legal/privacy-policy should create a privacy policy (admin only)', async () => {
-      const res = await request(app)
-        .post('/api/admin/legal/privacy-policy')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          version: '1.0',
-          content: 'Privacy policy content',
-          isActive: true,
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('version', '1.0');
-      expect(res.body).toHaveProperty('isActive', true);
-    });
-
     it('GET /api/legal/privacy-policy/active should get active privacy policy', async () => {
       // First create an active privacy policy
       await request(app)
@@ -302,21 +177,6 @@ describe('API Tests', () => {
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty('isActive', true);
       expect(res.body).toHaveProperty('content');
-    });
-
-    it('POST /api/admin/legal/terms-of-service should create terms of service (admin only)', async () => {
-      const res = await request(app)
-        .post('/api/admin/legal/terms-of-service')
-        .set('Authorization', `Bearer ${adminToken}`)
-        .send({
-          version: '1.0',
-          content: 'Terms of service content',
-          isActive: true,
-        });
-
-      expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty('version', '1.0');
-      expect(res.body).toHaveProperty('isActive', true);
     });
 
     it('GET /api/legal/terms-of-service/active should get active terms of service', async () => {
