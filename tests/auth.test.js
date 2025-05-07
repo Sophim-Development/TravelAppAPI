@@ -100,4 +100,4 @@ describe('Auth Endpoints', () => {
       });
     expect(res.status).toBe(401);
   });
-}); 
+});
