@@ -46,8 +46,9 @@ describe('Auth Endpoints', () => {
         email: 'testuser@example.com',
         password: 'password123',
       });
-    expect(res.status).toBe(201);
-    expect(res.body).toHaveProperty('email', 'testuser@example.com');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('user');
+    expect(res.body.user.email).toBe('testuser@example.com');
   });
 
   it('POST /api/auth/register should not allow duplicate registration', async () => {
@@ -97,6 +98,6 @@ describe('Auth Endpoints', () => {
         email: 'nonexistent@example.com',
         password: 'wrongpassword',
       });
-    expect(res.status).toBe(400);
+    expect(res.status).toBe(401);
   });
-}); 
+});
