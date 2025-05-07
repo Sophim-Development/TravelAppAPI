@@ -44,16 +44,12 @@ export const createReview = async (req, res, next) => {
 export const getReviews = async (req, res, next) => {
   try {
     const { placeId } = req.query;
-    if (!placeId) {
-      return res.status(400).json({ error: 'placeId is required' });
-    }
-    const reviews = await prisma.review.findMany({
-      where: { placeId },
-      include: { user: { select: { name: true } } },
-    });
-    res.json(reviews);
-  } catch (error) {
-    next(error);
+    let where = {};
+    if (placeId) where.placeId = placeId;
+    const reviews = await prisma.review.findMany({ where });
+    res.status(200).json({ data: reviews });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 

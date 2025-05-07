@@ -12,24 +12,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: test_db
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
 
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db
+      DATABASE_URL: file:./test.db?mode=memory&cache=shared
       NODE_ENV: test
 
     strategy:
@@ -45,12 +30,10 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - name: Reset Database
-      run: npx prisma migrate reset --force
     - name: Generate Prisma Client
       run: npx prisma generate
-    - name: Apply database migrations
-      run: npx prisma migrate dev
+    - name: Push Prisma schema to SQLite
+      run: npx prisma db push --force-reset
     - name: Build
       run: npm run build --if-present
     - name: Run tests with coverage
