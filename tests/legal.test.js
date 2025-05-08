@@ -59,7 +59,7 @@ describe('Legal Document Endpoints', () => {
   it('GET /api/legal/privacy-policy/active should get active privacy policy', async () => {
     // First create an active privacy policy
     await request(app)
-      .post('/api/admin/legal/privacy-policy')
+      .post('/api/legal/privacy-policy')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         version: '1.0',
@@ -75,7 +75,7 @@ describe('Legal Document Endpoints', () => {
   it('GET /api/legal/terms-of-service/active should get active terms of service', async () => {
     // First create an active terms of service
     await request(app)
-      .post('/api/admin/legal/terms-of-service')
+      .post('/api/legal/terms-of-service')
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         version: '1.0',
