@@ -5,4 +5,8 @@ coverage
 prisma/migrations
 
 #Ignore cursor AI rules
-.cursor/rules/codacy.mdc
+.cursor/
+
+# SQLite database files
+./test.db
+./test.db-journal

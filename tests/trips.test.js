@@ -1,15 +1,18 @@
 import request from 'supertest';
 import { app } from '../src/index.js';
-import prisma from './prismaTestClient.js';
-import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Mock passport.js
 jest.mock('../src/utils/passport.js', () => ({}));
 
-process.env.JWT_SECRET = 'test-jwt-secret';
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DATABASE_URL } },
+  __internal: { engine: { connectionLimit: 5 } },
+});
 
-let adminToken, userToken, admin, user, testLocation, testTrip;
+let adminToken, userToken, admin, user, testTrip, testLocation;
 
 describe('Trips Endpoints', () => {
   beforeAll(async () => {
