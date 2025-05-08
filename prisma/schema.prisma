@@ -44,6 +44,8 @@ model Booking {
   tripId      String
   trip        Trip     @relation(fields: [tripId], references: [id])
   bookingDate DateTime
+  guests      Int
+  total       Float
   status      Status   @default(pending)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

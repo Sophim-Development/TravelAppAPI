@@ -28,6 +28,7 @@ export const createBooking = async (req, res, next) => {
         guests,
         total,
         status: 'pending',
+        bookingDate: new Date(),
       },
     });
     res.status(201).json(booking);
@@ -86,6 +87,11 @@ export const updateBooking = async (req, res, next) => {
 
     const { id } = req.params;
     const { status } = req.body;
+    // Check if booking exists first
+    const existing = await prisma.booking.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
     const booking = await prisma.booking.update({
       where: { id },
       data: { status },
