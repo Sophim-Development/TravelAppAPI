@@ -1,10 +1,11 @@
+// Set DATABASE_URL="file:./tmp/test.db" in your .env file to use SQLite in the tmp folder
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "linux-arm64-openssl-3.0.x"]
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -44,6 +45,8 @@ model Booking {
   tripId      String
   trip        Trip     @relation(fields: [tripId], references: [id])
   bookingDate DateTime
+  guests      Int
+  total       Float
   status      Status   @default(pending)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

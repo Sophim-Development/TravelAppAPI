@@ -3,3 +3,10 @@ node_modules
 .env
 coverage
 prisma/migrations
+
+#Ignore cursor AI rules
+.cursor/
+
+# SQLite database files
+./test.db
+./test.db-journal
