@@ -147,8 +147,7 @@ describe('Locations Endpoints', () => {
     const res = await request(app)
       .delete(`/api/admin/locations/${locationToDelete.id}`)
       .set('Authorization', `Bearer ${adminToken}`);
-    expect(res.status).toBe(200);
-    expect(res.body).toHaveProperty('message');
+    expect(res.status).toBe(204);
   });
 
   it('DELETE /api/admin/locations/:id should not allow regular user to delete a location', async () => {

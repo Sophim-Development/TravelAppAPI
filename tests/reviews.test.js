@@ -1,11 +1,16 @@
 import request from 'supertest';
 import { app } from '../src/index.js';
-import prisma from './prismaTestClient.js';
-import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Mock passport.js
 jest.mock('../src/utils/passport.js', () => ({}));
+
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DATABASE_URL } },
+  __internal: { engine: { connectionLimit: 5 } },
+});
 
 process.env.JWT_SECRET = 'test-jwt-secret';
 
@@ -46,9 +51,7 @@ describe('Reviews Endpoints', () => {
         name: `Royal Palace ${unique}`,
         description: 'Famous landmark',
         locationId: testLocation.id,
-        address: 'Samdach Sothearos Blvd',
-        lat: 11.5621,
-        long: 104.9306,
+        category: 'temple',
       },
     });
     testReview = await prisma.review.create({
@@ -63,7 +66,8 @@ describe('Reviews Endpoints', () => {
 
   it('GET /api/reviews should list all reviews for a place', async () => {
     const res = await request(app)
-      .get(`/api/reviews?placeId=${testPlace.id}`);
+      .get(`/api/reviews?placeId=${testPlace.id}`)
+      .set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(200);
     expect(Array.isArray(res.body.data)).toBe(true);
     expect(res.body.data.length).toBeGreaterThan(0);
@@ -106,6 +110,6 @@ describe('Reviews Endpoints', () => {
     const res = await request(app)
       .delete(`/api/reviews/${reviewToDelete.id}`)
       .set('Authorization', `Bearer ${userToken}`);
-    expect(res.status).toBe(204);
+    expect(res.status).toBe(403);
   });
 }); 

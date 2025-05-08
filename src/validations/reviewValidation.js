@@ -6,11 +6,11 @@ export const validateReviewCreation = [
 ];
 
 export const validateReviewId = [
-  param('id').isInt().withMessage('Review ID must be an integer'),
+  param('id').isString().withMessage('Review ID must be a string'),
 ];
 
 export const validateReviewUpdate = [
-  param('id').isInt().withMessage('Review ID must be an integer'),
+  param('id').isString().withMessage('Review ID must be a string'),
   body('rating').optional().isInt({ min: 1, max: 5 }).withMessage('Rating must be between 1 and 5'),
   body('comment').optional().isString().withMessage('Comment must be a string'),
 ];

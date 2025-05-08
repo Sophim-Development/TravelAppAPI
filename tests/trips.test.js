@@ -1,11 +1,16 @@
 import request from 'supertest';
 import { app } from '../src/index.js';
-import prisma from './prismaTestClient.js';
-import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 // Mock passport.js
 jest.mock('../src/utils/passport.js', () => ({}));
+
+const prisma = new PrismaClient({
+  datasources: { db: { url: process.env.DATABASE_URL } },
+  __internal: { engine: { connectionLimit: 5 } },
+});
 
 process.env.JWT_SECRET = 'test-jwt-secret';
 
@@ -77,7 +82,7 @@ describe('Trips Endpoints', () => {
     expect(res.body).toHaveProperty('id', testTrip.id);
   });
 
-  it('POST /api/admin/trips should allow admin to create a trip', async () => {
+  it('POST /api/trips should allow admin to create a trip', async () => {
     const unique = Date.now() + Math.random();
     const newTrip = {
       title: `Phnom Penh City Tour ${unique}`,
@@ -89,14 +94,14 @@ describe('Trips Endpoints', () => {
       price: 80.0,
     };
     const res = await request(app)
-      .post('/api/admin/trips')
+      .post('/api/trips')
       .set('Authorization', `Bearer ${adminToken}`)
       .send(newTrip);
     expect(res.status).toBe(201);
     expect(res.body).toHaveProperty('title', newTrip.title);
   });
 
-  it('POST /api/admin/trips should not allow regular user to create a trip', async () => {
+  it('POST /api/trips should not allow regular user to create a trip', async () => {
     const unique = Date.now() + Math.random();
     const newTrip = {
       title: `Unauthorized Trip ${unique}`,
@@ -108,15 +113,15 @@ describe('Trips Endpoints', () => {
       price: 80.0,
     };
     const res = await request(app)
-      .post('/api/admin/trips')
+      .post('/api/trips')
       .set('Authorization', `Bearer ${userToken}`)
       .send(newTrip);
     expect(res.status).toBe(403);
   });
 
-  it('PUT /api/admin/trips/:id should allow admin to update a trip', async () => {
+  it('PUT /api/trips/:id should allow admin to update a trip', async () => {
     const res = await request(app)
-      .put(`/api/admin/trips/${testTrip.id}`)
+      .put(`/api/trips/${testTrip.id}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({
         title: `Siem Reap Hotel Stay Updated ${Date.now()}`,
@@ -131,7 +136,7 @@ describe('Trips Endpoints', () => {
     expect(res.body).toHaveProperty('title');
   });
 
-  it('DELETE /api/admin/trips/:id should allow admin to delete a trip', async () => {
+  it('DELETE /api/trips/:id should allow admin to delete a trip', async () => {
     const unique = Date.now() + Math.random();
     const tripToDelete = await prisma.trip.create({
       data: {
@@ -145,12 +150,12 @@ describe('Trips Endpoints', () => {
       },
     });
     const res = await request(app)
-      .delete(`/api/admin/trips/${tripToDelete.id}`)
+      .delete(`/api/trips/${tripToDelete.id}`)
       .set('Authorization', `Bearer ${adminToken}`);
     expect(res.status).toBe(204);
   });
 
-  it('DELETE /api/admin/trips/:id should not allow regular user to delete a trip', async () => {
+  it('DELETE /api/trips/:id should not allow regular user to delete a trip', async () => {
     const unique = Date.now() + Math.random();
     const tripToDelete = await prisma.trip.create({
       data: {
@@ -164,7 +169,7 @@ describe('Trips Endpoints', () => {
       },
     });
     const res = await request(app)
-      .delete(`/api/admin/trips/${tripToDelete.id}`)
+      .delete(`/api/trips/${tripToDelete.id}`)
       .set('Authorization', `Bearer ${userToken}`);
     expect(res.status).toBe(403);
   });
