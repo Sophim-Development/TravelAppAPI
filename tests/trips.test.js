@@ -2,6 +2,8 @@ import request from 'supertest';
 import { app } from '../src/index.js';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
+import { PrismaClient } from '@prisma/client';
+import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Mock passport.js
@@ -14,7 +16,7 @@ const prisma = new PrismaClient({
 
 process.env.JWT_SECRET = 'test-jwt-secret';
 
-let adminToken, userToken, admin, user, testLocation, testTrip;
+let adminToken, userToken, admin, user, testTrip, testLocation;
 
 describe('Trips Endpoints', () => {
   beforeAll(async () => {
