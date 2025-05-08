@@ -3,6 +3,8 @@ node_modules
 .env
 coverage
 prisma/migrations
+prisma/test.db
+prisma/test.db-journal
 
 #Ignore cursor AI rules
 .cursor/rules/codacy.mdc
