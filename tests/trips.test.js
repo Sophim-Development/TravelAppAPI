@@ -2,8 +2,6 @@ import request from 'supertest';
 import { app } from '../src/index.js';
 import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 
 // Mock passport.js
