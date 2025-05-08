@@ -9,11 +9,11 @@ export const validateLocationCreation = [
 ];
 
 export const validateLocationId = [
-  param('id').isInt().withMessage('Location ID must be an integer'),
+  param('id').isUUID().withMessage('Location ID must be a UUID'),
 ];
 
 export const validateLocationUpdate = [
-  param('id').isInt().withMessage('Location ID must be an integer'),
+  param('id').isUUID().withMessage('Location ID must be a UUID'),
   body('name').optional().notEmpty().withMessage('Name is required'),
   body('country').optional().notEmpty().withMessage('Country is required'),
   body('description').optional().notEmpty().withMessage('Description is required'),

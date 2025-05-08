@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+import { validationResult } from 'express-validator';
 
 const prisma = new PrismaClient();
 
@@ -19,26 +20,17 @@ export const getLocations = async (req, res, next) => {
 export const getLocation = async (req, res, next) => {
   try {
     const { id } = req.params;
-
-    const locationId = parseInt(id, 10);
-
-    if (isNaN(locationId)) {
-      return res.status(400).json({ error: 'Invalid location ID format' });
-    }
-
     const location = await prisma.location.findUnique({
-      where: { id: locationId },
+      where: { id },
       include: {
         trips: true,
         places: true,
       },
     });
-
     if (!location) {
       return res.status(404).json({ error: 'Location not found' });
     }
-
-    res.status(200).json({data: location});
+    res.status(200).json(location);
   } catch (error) {
     console.error('Error fetching location:', error);
     res.status(500).json({ error: 'Internal server error' });
@@ -47,13 +39,10 @@ export const getLocation = async (req, res, next) => {
 
 export const createLocation = async (req, res, next) => {
   try {
-    // Check if the user has the 'admin' role
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized' });
     }
-
     const { name, country, description, lat, long } = req.body;
-
     const location = await prisma.location.create({
       data: {
         name,
@@ -63,8 +52,7 @@ export const createLocation = async (req, res, next) => {
         long: parseFloat(long),
       },
     });
-
-    res.status(201).json({ location });
+    res.status(201).json(location);
   } catch (error) {
     console.error('Error creating location:', error);
     next(error);
@@ -77,11 +65,9 @@ export const updateLocation = async (req, res, next) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
     }
-
     if (req.user.role !== 'admin') {
       return res.status(403).json({ error: 'Unauthorized' });
     }
-
     const { id } = req.params;
     const { name, country, description } = req.body;
     const location = await prisma.location.update({
@@ -94,16 +80,15 @@ export const updateLocation = async (req, res, next) => {
   }
 };
 
-export const deleteLocation = async (req, res, next) => {
+export const deleteLocation = async (req, res) => {
   try {
-    if (req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-
     const { id } = req.params;
     await prisma.location.delete({ where: { id } });
     res.status(204).send();
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Location not found' });
+    }
+    res.status(500).json({ error: err.message });
   }
 };

@@ -11,37 +11,42 @@ export const createBooking = async (req, res, next) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const { tripId, bookingDate } = req.body;
+    const { tripId, guests, total, userId } = req.body;
+    // Only allow booking for self
+    if (userId && userId !== req.user.id) {
+      return res.status(403).json({ error: 'Cannot book for another user' });
+    }
+    // Check if trip exists
+    const trip = await prisma.trip.findUnique({ where: { id: tripId } });
+    if (!trip) {
+      return res.status(400).json({ error: 'Trip does not exist' });
+    }
     const booking = await prisma.booking.create({
       data: {
         userId: req.user.id,
         tripId,
-        bookingDate: new Date(bookingDate),
+        guests,
+        total,
         status: 'pending',
+        bookingDate: new Date(),
       },
     });
     res.status(201).json(booking);
-  } catch (error) {
-    next(error);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
 export const getBooking = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const booking = await prisma.booking.findUnique({
-      where: { id },
-      include: { user: true, trip: true },
-    });
+    const booking = await prisma.booking.findUnique({ where: { id } });
     if (!booking) {
       return res.status(404).json({ error: 'Booking not found' });
     }
-    if (req.user.id !== booking.userId && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Unauthorized' });
-    }
-    res.json(booking);
-  } catch (error) {
-    next(error);
+    res.status(200).json(booking);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 };
 
@@ -82,12 +87,20 @@ export const updateBooking = async (req, res, next) => {
 
     const { id } = req.params;
     const { status } = req.body;
+    // Check if booking exists first
+    const existing = await prisma.booking.findUnique({ where: { id } });
+    if (!existing) {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
     const booking = await prisma.booking.update({
       where: { id },
       data: { status },
     });
-    res.json(booking);
-  } catch (error) {
-    next(error);
+    res.status(200).json(booking);
+  } catch (err) {
+    if (err.code === 'P2025') {
+      return res.status(404).json({ error: 'Booking not found' });
+    }
+    res.status(500).json({ error: err.message });
   }
 };
