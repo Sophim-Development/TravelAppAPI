@@ -3,6 +3,9 @@ import { app } from '../src/index.js';
 import { PrismaClient } from '@prisma/client';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import dotenv from 'dotenv';
+
+dotenv.config({ path: '.env.test' });
 
 // Mock passport.js
 jest.mock('../src/utils/passport.js', () => ({}));
